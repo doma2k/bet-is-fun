@@ -1,15 +1,11 @@
-// import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { http } from "wagmi";
-import { base, monadTestnet } from "wagmi/chains";
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { http, createConfig } from "wagmi";
+import { monadTestnet } from "wagmi/chains";
+import { farcasterFrame as miniAppConnector } from "@farcaster/frame-wagmi-connector";
 
-export const config = getDefaultConfig({
-  appName: "Bet on Fun",
-  projectId: "bet.warpcast",
-  chains: [base, monadTestnet],
+export const config = createConfig({
+  chains: [monadTestnet],
   transports: {
-    [base.id]: http(),
     [monadTestnet.id]: http(),
   },
-  ssr: true,
+  connectors: [miniAppConnector()],
 });

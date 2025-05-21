@@ -1,15 +1,18 @@
-// Hooks
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 import Container from "./Container";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-// import { useChainId, useSwitchChain } from "wagmi";
+import { useChainId, useSwitchChain } from "wagmi";
 import sdk from "@farcaster/frame-sdk";
-// import type { Context } from "@farcaster/frame-core";
 import farcasterFrame from "@farcaster/frame-wagmi-connector";
 import { monadTestnet } from "wagmi/chains";
+import type { Context } from "@farcaster/frame-core";
+import { Button } from "@/components/ui/button";
+// import { useReadContract } from "wagmi";
+// import { wagmiContractConfig } from "@/lib/contracts";
+import { useBalance } from "wagmi";
 
 type BetResult = {
   won: boolean;
@@ -25,15 +28,10 @@ type GameConfig = {
   winChance: number; // Chance to win percentage (1-95)
 };
 
-// type UserInfo = {
-//   img: string;
-//   displayName: string;
-// };
-
 export default function GamblingGame() {
   const { isConnected } = useAccount();
-  // const chainId = useChainId();
-  // const { switchChainAsync } = useSwitchChain();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const [gameError, setGameError] = useState<boolean>(false);
   const [gameErrorText, setGameErrorText] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -47,9 +45,18 @@ export default function GamblingGame() {
     winChance: 45,
   });
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  // const [context, setContext] = useState<Context.FrameContext>();
+  const [context, setContext] = useState<Context.FrameContext>();
   const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const [totalPool, setSetPool] = useState(BigInt(0));
   // const [userInfo, setUserInfo] = useState<UserInfo>();
+  // const [serverSeedHash, setServerSeedHash] = useState("");
+
+  const result = useBalance({
+    address: "0x4557B18E779944BFE9d78A672452331C186a9f48",
+    chainId: monadTestnet.id,
+    unit: "ether",
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -57,7 +64,7 @@ export default function GamblingGame() {
         .then((context) => {
           console.log({ context });
           if (context) {
-            // setContext(context);
+            setContext(context);
             connect({ connector: farcasterFrame(), chainId: monadTestnet.id });
             sdk.actions.ready();
           }
@@ -84,7 +91,9 @@ export default function GamblingGame() {
       setBetHistory([]);
       setGameError(false);
       setGameErrorText("");
-
+      if (result.data?.value) {
+        setSetPool(result.data?.value);
+      }
       toast.success("Game session initialized", {
         description: "Ready to place bets!",
       });
@@ -94,34 +103,21 @@ export default function GamblingGame() {
         description: (error as Error).message,
       });
     }
-  }, [isConnected]);
+  }, [isConnected, result.data?.value]);
 
   useEffect(() => {
-    if (!isConnected) {
-      setBetHistory([]);
-      return;
-    }
-    // if (context) {
-    //   // setUserInfo({
-    //   //   img: context?.user.pfpUrl || "",
-    //   //   displayName: context?.user.displayName || "",
-    //   // });
-    // }
     initializeGameSession();
-  }, [isConnected, initializeGameSession]);
-
-  // useEffect(() => {
-  //   const switchToMonadTestnet = async () => {
-  //     if (chainId !== monadTestnet.id) {
-  //       try {
-  //         await switchChainAsync({ chainId: monadTestnet.id });
-  //       } catch (error) {
-  //         console.error("Failed to switch to BamonadTestnetse:", error);
-  //       }
-  //     }
-  //   };
-  //   switchToMonadTestnet();
-  // }, [chainId, switchChainAsync]);
+    const switchToMonadTestnet = async () => {
+      if (chainId !== monadTestnet.id) {
+        try {
+          await switchChainAsync({ chainId: monadTestnet.id });
+        } catch (error) {
+          console.error("Failed to switch to BamonadTestnetse:", error);
+        }
+      }
+    };
+    switchToMonadTestnet();
+  }, [isConnected, initializeGameSession, switchChainAsync, chainId]);
 
   const placeBet = async () => {
     if (isProcessing) return;
@@ -132,6 +128,7 @@ export default function GamblingGame() {
     }
     try {
       setIsProcessing(true);
+
       let winAmount = 0;
       let newBalance = userBalance;
       const randomNumber = Math.random() * 100;
@@ -188,14 +185,45 @@ export default function GamblingGame() {
     <Container>
       <div className="flex flex-col flex-1 w-full max-w-md mx-auto">
         <div className="flex items-center w-full justify-center mb-4 p-4">
-          {isConnected ? (
-            <div className="w-16 text-center font-bold">
-              {userBalance.toFixed(4)} MON
+          <button
+            onClick={() => {
+              console.log(result.data?.value);
+            }}
+          >
+            {totalPool}
+          </button>
+        </div>
+        {!isConnected ? (
+          !context?.user ? (
+            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+              To transact connect a wallet by clicking below
+              <div className="flex justify-center my-4">
+                <ConnectButton />
+              </div>
             </div>
           ) : (
+            <div>
+              <div className="flex flex-col items-center w-full">
+                <Button
+                  onClick={() =>
+                    isConnected
+                      ? disconnect()
+                      : connect({
+                          chainId: monadTestnet.id,
+                          connector: farcasterFrame(),
+                        })
+                  }
+                >
+                  {isConnected ? "Disconnect" : "Connect"}
+                </Button>
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="flex justify-center p-6">
             <ConnectButton />
-          )}
-        </div>
+          </div>
+        )}
         {isConnected ? (
           <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 mb-6 transition-all">
             <h2 className="text-xl font-bold mb-4">Place Your Bet</h2>

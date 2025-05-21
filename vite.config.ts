@@ -7,7 +7,7 @@ import vercel from "vite-plugin-vercel";
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    allowedHosts: ["borough-freely-retention-pending.trycloudflare.com"],
+    allowedHosts: ["italian-often-tt-que.trycloudflare.com"],
   },
   plugins: [react(), tailwindcss(), vercel()],
   resolve: {
