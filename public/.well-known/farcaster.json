@@ -1,0 +1,16 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "name": "Bet is Fun",
+    "version": "0.0.1",
+    "iconUrl": "2048-frontend-eight.vercel.app/images/icon.png",
+    "homeUrl": "https://borough-freely-retention-pending.trycloudflare.com/",
+    "splashImageUrl": "https://borough-freely-retention-pending.trycloudflare.com/images/splash.png",
+    "splashBackgroundColor": "#f7f7f7",
+    "webhookUrl": "https://borough-freely-retention-pending.trycloudflare.com/webhookurl"
+  }
+}
