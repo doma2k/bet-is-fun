@@ -6,7 +6,7 @@ import sdk from "@farcaster/frame-sdk";
 // import farcasterFrame from "@farcaster/frame-wagmi-connector";
 import { monadTestnet } from "wagmi/chains";
 import { config } from "./lib/clients";
-import { YourApp } from "./components/ui/connection";
+// import { YourApp } from "./components/ui/connection";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import AnalogSwitch from "./components/ui/switch";
 export default function App() {
@@ -54,14 +54,14 @@ export default function App() {
         });
     };
     if (sdk && !isSDKLoaded) {
+      console.log(context);
       setIsSDKLoaded(true);
       load();
     }
-  }, [isSDKLoaded, connect]);
+  }, [isSDKLoaded, connect, context]);
 
   return (
     <div className="flex flex-col items-center justify-betwee">
-      <YourApp />
       <Game systemPower={systemPower}>
         <AnalogSwitch
           label="Network"

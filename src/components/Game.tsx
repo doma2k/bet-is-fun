@@ -73,6 +73,13 @@
 // };
 import { useState, useEffect } from "react";
 import ArcadeButton from "./ui/arcade-button";
+// type BetResult = {
+//   won: boolean;
+//   userNumber: number;
+//   winningNumber: number;
+//   payout: number;
+//   betAmount: number;
+// };
 
 export default function Game({
   children,
@@ -81,35 +88,49 @@ export default function Game({
   children: React.ReactNode;
   systemPower: boolean;
 }) {
-  const [count, setCount] = useState(0);
   const [lastPressed, setLastPressed] = useState<string | null>(null);
   const [prizePool, setPrizePool] = useState(1000);
   const [winChance, setWinChance] = useState(25);
   const [playerBalance, setPlayerBalance] = useState(500);
   const [blink, setBlink] = useState(false);
-  //   const [gameMode, setGameMode] = useState(false);
+  const [bet, setBet] = useState(10);
+  //   const [won, setWon] = useState(0);
 
   const handleButtonPress = (buttonName: string) => {
     console.log(systemPower);
     if (!systemPower) return;
-    setCount((prev) => prev + 1);
+
     setLastPressed(buttonName);
 
-    // Randomly increase prize pool
-    setPrizePool((prev) => prev + Math.floor(Math.random() * 50));
-
-    // Adjust win chance slightly
     setWinChance((prev) => {
       const newChance =
         prev + (Math.random() > 0.5 ? 1 : -1) * Math.random() * 5;
       return Math.min(Math.max(newChance, 5), 45); // Keep between 5% and 45%
     });
 
+    setBet((prev) => {
+      let newValue;
+
+      if (lastPressed == "Red") {
+        newValue = prev + Math.floor(Math.random() * 10) + 1;
+      } else if (lastPressed == "Blue") {
+        newValue = Math.max(0, prev - Math.floor(Math.random() * 5) + 1);
+      } else if (lastPressed == "Green") {
+        newValue = prev * (Math.random() * 2 + 1);
+      } else {
+        newValue = prev / (Math.random() * 2 + 1);
+      }
+
+      return Math.max(0, newValue);
+    });
+
     // Check for win and update balance
     if (Math.random() * 100 < winChance) {
-      const winAmount = Math.floor(Math.random() * 100) + 10;
+      const winAmount = bet;
+      setPrizePool((prev) => prev - winAmount);
       setPlayerBalance((prev) => prev + winAmount);
     } else {
+      setPrizePool((prev) => prev + bet);
       setPlayerBalance((prev) => Math.max(prev - 10, 0)); // Deduct 10, but don't go below 0
     }
   };
