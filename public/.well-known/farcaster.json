@@ -1,16 +1,18 @@
 {
   "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
+    "header": "eyJmaWQiOjEwNjIyMDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhCMTU5NTk1QWRGNUIxODg5NjM3ZDEyQjg2OEIxMDAxZDIwMDM2QjAzIn0",
+    "payload": "eyJkb21haW4iOiIyMDQ4LWZyb250ZW5kLWVpZ2h0LnZlcmNlbC5hcHAifQ",
+    "signature": "MHhiZTBiYzJlZDcxMmRkZmM0NWM1MjE1ZDMyZWI1OTc5YmRiZGNhYTdmZTBhODJiMzdiYmMyZDkyM2FlZTMyYTc0NzQwMjAxYzI3ZDY1ZWE3OTQ0N2FlOWZmNjRiZTM3ZDVhMzY2NDFhYjYxNjJkMjdmMDAxM2UwM2M5YTg2MDJiZTFi"
   },
   "frame": {
-    "name": "Bet is Fun",
-    "version": "0.0.1",
-    "iconUrl": "2048-frontend-eight.vercel.app/images/icon.png",
-    "homeUrl": "2048-frontend-eight.vercel.app/",
-    "splashImageUrl": "2048-frontend-eight.vercel.app/images/splash.png",
-    "splashBackgroundColor": "#f7f7f7",
-    "webhookUrl": "2048-frontend-eight.vercel.app/webhookurl"
+    "version": "1",
+    "name": "Example Frame",
+    "iconUrl": "https://2048-frontend-eight.vercel.app/images/icon.png",
+    "homeUrl": "https://2048-frontend-eight.vercel.app",
+    "imageUrl": "https://2048-frontend-eight.vercel.app/images/feed.png",
+    "buttonTitle": "Check this out",
+    "splashImageUrl": "https://2048-frontend-eight.vercel.app/images/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://bet.warpcast.com/api/webhook"
   }
 }
