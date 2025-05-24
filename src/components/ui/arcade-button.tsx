@@ -14,7 +14,7 @@ interface ArcadeButtonProps {
 
 export default function ArcadeButton({
   color = "red",
-  size = "lg",
+  size = "md",
   onClick,
   className,
   label,
@@ -33,7 +33,7 @@ export default function ArcadeButton({
   // Map sizes to dimensions
   const sizeMap = {
     sm: "w-16 h-16",
-    md: "w-24 h-24",
+    md: "w-20 h-11",
     lg: "w-32 h-32",
     xl: "w-40 h-40",
   };

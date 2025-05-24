@@ -1,14 +1,16 @@
-import Game from "./components/Game";
+import Game from "./Game";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import type { Context } from "@farcaster/frame-core";
 import { useEffect, useState } from "react";
 import sdk from "@farcaster/frame-sdk";
 // import farcasterFrame from "@farcaster/frame-wagmi-connector";
 import { monadTestnet } from "wagmi/chains";
-import { config } from "./lib/clients";
+import { config } from "../lib/clients";
 // import { YourApp } from "./components/ui/connection";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import AnalogSwitch from "./components/ui/switch";
+import AnalogSwitch from "./ui/switch";
+// import { recoverAuthorizationAddress } from "viem/utils";
+
 export default function App() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
@@ -21,7 +23,9 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [systemPower, setSystemPower] = useState(false);
-
+  const [currentView, setCurrentView] = useState<"buttons" | "inputs">(
+    "inputs"
+  );
   useEffect(() => {
     if (isModalOpen && isConnected && address) {
       console.log("User successfully connected:", address);
@@ -61,32 +65,53 @@ export default function App() {
   }, [isSDKLoaded, connect, context]);
 
   return (
-    <div className="flex flex-col items-center justify-betwee">
-      <Game systemPower={systemPower}>
-        <AnalogSwitch
-          label="Network"
-          size="md"
-          initialState={isConnected}
-          disabled={false}
-          onToggle={async (isOn) => {
-            console.log("isOn:", isOn);
+    <div className="flex flex-col items-center justify-between">
+      <Game systemPower={systemPower} currentView={currentView}>
+        <div className="flex items-center justify-evenly ">
+          <AnalogSwitch
+            label="Network"
+            size="md"
+            initialState={isConnected}
+            disabled={false}
+            onToggle={async (isOn) => {
+              console.log("isOn:", isOn);
 
-            if (!isOn) {
-              console.log("logout:", isOn);
-              disconnect();
-              setSystemPower(false);
-              return;
-            }
-
-            if (isOn) {
-              if (!isConnected) {
-                handleConnect();
-                setSystemPower(true);
+              if (!isOn) {
+                console.log("logout:", isOn);
+                disconnect();
+                setSystemPower(false);
                 return;
               }
-            }
-          }}
-        />
+
+              if (isOn) {
+                if (!isConnected) {
+                  handleConnect();
+                  setSystemPower(true);
+                  return;
+                }
+              }
+            }}
+          />
+          <AnalogSwitch
+            label="Game Mode"
+            size="md"
+            initialState={false}
+            disabled={false}
+            onToggle={async (isOn) => {
+              console.log("isOn:", isOn);
+
+              if (!isOn) {
+                setCurrentView("inputs");
+                return;
+              }
+
+              if (isOn) {
+                setCurrentView("buttons");
+                return;
+              }
+            }}
+          />
+        </div>
       </Game>
       {/* <Toaster
           visibleToasts={1}

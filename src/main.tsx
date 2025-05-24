@@ -1,4 +1,4 @@
-import App from "./App";
+import App from "./components/App";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Provider from "./components/provider";
